@@ -1,6 +1,6 @@
-# Shelter
+# virtual-keyboard
 
-RS School Shelter project.
+RS School virtual keyboard project.
 
 ## Run the app
 
@@ -17,6 +17,3 @@ npm i
 
 npm run build-prod
 ```
-
-## Deploy
-https://vladi4-gh.github.io/shelter/

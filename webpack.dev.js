@@ -1,5 +1,5 @@
 const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const common = require('./webpack.common');
 
 module.exports = (env, argv) =>
   merge(common(env, argv, false), {
@@ -10,8 +10,7 @@ module.exports = (env, argv) =>
       open: true,
       static: {
         watch: true,
-        directory: '**/*.html'
       },
-      historyApiFallback: true
-    }
+      historyApiFallback: true,
+    },
   });

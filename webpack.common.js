@@ -1,54 +1,31 @@
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env, argv, isProduction) => ({
   entry: {
     main: {
-      import: './src/pages/main/index.ts',
-      filename: `[name]${isProduction ? '.min' : ''}.js`
+      import: './src/index.js',
+      filename: `[name]${isProduction ? '.min' : ''}.js`,
     },
-    pets: {
-      import: './src/pages/pets/index.ts',
-      filename: `pets/[name]${isProduction ? '.min' : ''}.js`
-    }
   },
   output: {
-    clean: true
+    clean: true,
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/pages/main/index.html',
+      template: './src/index.html',
       favicon: './src/assets/images/icons/favicon.ico',
       chunks: ['main'],
       filename: 'index.html',
       inject: false,
       hash: isProduction,
-      title: 'Shelter',
-      mode: !isProduction ? 'development' : 'production'
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/pages/pets/index.html',
-      favicon: './src/assets/images/icons/favicon.ico',
-      chunks: ['pets'],
-      filename: 'pets/index.html',
-      inject: false,
-      hash: isProduction,
-      title: 'Shelter - Our Pets',
-      mode: !isProduction ? 'development' : 'production'
+      title: 'Virtual keyboard',
+      mode: !isProduction ? 'development' : 'production',
     }),
     new MiniCssExtractPlugin({
-      filename: ({ chunk }) => `${chunk.name === 'pets' ? 'pets/' : ''}[name]${isProduction ? '.min' : ''}.css`
+      filename: `[name]${isProduction ? '.min' : ''}.css`,
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'src/content',
-          to: 'static/content'
-        }
-      ]
-    })
   ],
   module: {
     rules: [
@@ -56,54 +33,52 @@ module.exports = (env, argv, isProduction) => ({
         test: /\.(png|svg)$/,
         type: 'asset/resource',
         generator: {
-          filename: 'static/images/[name][ext]'
-        }
+          filename: 'static/images/[name][ext]',
+        },
       },
       {
         test: /\.(ttf|woff|woff2)$/,
         type: 'asset/resource',
         generator: {
-          filename: 'static/fonts/[name][ext]'
-        }
+          filename: 'static/fonts/[name][ext]',
+        },
       },
       {
         test: /\.s?css$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
           {
             loader: 'css-loader',
             options: {
-              sourceMap: true
-            }
+              sourceMap: true,
+            },
           },
           {
-            loader: 'resolve-url-loader'
+            loader: 'resolve-url-loader',
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        resolve: {
-          extensions: ['.ts']
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
         },
-        use: [
-          {
-            loader: 'ts-loader'
-          }
-        ]
-      }
-    ]
+      },
+    ],
   },
   optimization: {
-    minimizer: ['...', new CssMinimizerPlugin()]
-  }
+    minimizer: ['...', new CssMinimizerPlugin()],
+  },
 });

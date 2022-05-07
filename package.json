@@ -1,8 +1,8 @@
 {
-  "name": "shelter",
-  "description": "RS School Shelter project.",
+  "name": "virtual-keyboard",
+  "description": "RS School virtual keyboard project.",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "index.js",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -12,28 +12,28 @@
     "build-prod": "webpack --config webpack.prod.js"
   },
   "dependencies": {
-    "normalize.css": "8.0.1",
-    "swiper": "8.1.1"
+    "normalize.css": "8.0.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "5.18.0",
-    "@typescript-eslint/parser": "5.18.0",
-    "copy-webpack-plugin": "10.2.4",
+    "@babel/core": "7.17.10",
+    "@babel/preset-env": "7.17.10",
+    "babel-loader": "8.2.5",
     "css-loader": "6.7.1",
     "css-minimizer-webpack-plugin": "3.4.1",
-    "eslint": "8.13.0",
+    "eslint": "8.15.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
     "html-webpack-plugin": "5.5.0",
     "mini-css-extract-plugin": "2.6.0",
     "node-sass": "7.0.1",
-    "npm-check-updates": "12.5.8",
-    "prettier-eslint": "13.0.0",
+    "npm-check-updates": "12.5.11",
+    "prettier-eslint": "14.0.2",
     "resolve-url-loader": "5.0.0",
     "sass-loader": "12.6.0",
-    "ts-loader": "9.2.8",
-    "typescript": "4.6.3",
     "webpack": "5.72.0",
     "webpack-cli": "4.9.2",
-    "webpack-dev-server": "4.8.1",
+    "webpack-dev-server": "4.9.0",
     "webpack-merge": "5.8.0"
   }
 }

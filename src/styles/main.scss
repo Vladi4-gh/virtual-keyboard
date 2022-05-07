@@ -1,0 +1,17 @@
+@import 'normalize.css/normalize.css';
+@import './fonts/georgia.scss';
+@import './variables/colors.scss';
+@import './mixins/backgrounds.scss';
+@import './mixins/fonts.scss';
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  @include background-default;
+  @include font-georgia;
+
+  color: var(--color-dark-3xl);
+  font-size: 2rem;
+}
