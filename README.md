@@ -17,3 +17,7 @@ npm i
 
 npm run build-prod
 ```
+
+## Demo
+
+https://vladi4-gh.github.io/virtual-keyboard/
