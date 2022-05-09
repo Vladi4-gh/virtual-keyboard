@@ -1,10 +1,11 @@
 class Key {
-  constructor(container, keyCode, label, secondLabel, isLowerCase, onClick) {
+  constructor(container, keyCode, label, secondLabel, isLowerCase, isActive, onClick) {
     this.container = container;
     this.keyCode = keyCode;
     this.label = label;
     this.secondLabel = secondLabel;
     this.isLowerCase = isLowerCase;
+    this.isActive = isActive;
     this.onClick = onClick;
   }
 
@@ -12,6 +13,11 @@ class Key {
     const key = document.createElement('button');
 
     key.classList.add('key');
+
+    if (this.isActive) {
+      key.classList.add('active');
+    }
+
     key.setAttribute('data-key-code', this.keyCode);
     key.innerHTML = `<span class="label">${this.isLowerCase ? this.label.toLowerCase() : this.label}</span>`;
 

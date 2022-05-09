@@ -6,6 +6,7 @@ class Keyboard {
   constructor(container) {
     this.container = container;
     this.isLowerCase = true;
+    this.isShift = false;
     this.isCapsLock = false;
 
     this.switchLayout(true);
@@ -22,40 +23,168 @@ class Keyboard {
 
     localStorageManager.virtualKeyboard.currentLayoutLanguage = currentLanguage;
     this.keysLayout = keysLayout[currentLanguage];
+    this.keysInfo = this.keysLayout.flat().reduce((acc, x) => {
+      acc[x.keyCode] = { ...x };
+
+      return acc;
+    }, {});
   }
 
   getKeyHandler(keyData) {
-    let onClick = () => {};
-
     if (keyData.keyCode === 'ChangeLanguage') {
-      onClick = () => {
+      return () => {
         this.switchLayout();
         this.renderKeyboard();
+        this.textElement.focus();
       };
     }
 
-    return onClick;
+    if (keyData.keyCode === 'Tab') {
+      return () => {
+        this.textElement.value += '\t';
+
+        this.textElement.focus();
+      };
+    }
+
+    if (keyData.keyCode === 'Backspace') {
+      return () => {
+        this.handleBackspace();
+        this.textElement.focus();
+      };
+    }
+
+    if (keyData.keyCode === 'Delete') {
+      return () => {
+        this.handleDelete();
+        this.textElement.focus();
+      };
+    }
+
+    if (keyData.keyCode === 'Enter') {
+      return () => {
+        this.textElement.value += '\n';
+
+        this.textElement.focus();
+      };
+    }
+
+    if (keyData.keyCode === 'Space') {
+      return () => {
+        this.textElement.value += ' ';
+
+        this.textElement.focus();
+      };
+    }
+
+    if (keyData.keyCode === 'CapsLock') {
+      return () => {
+        this.isCapsLock = !this.isCapsLock;
+        this.isLowerCase = !this.isCapsLock;
+
+        this.renderKeyboard();
+        this.textElement.focus();
+      };
+    }
+
+    if (keyData.isWritable) {
+      return () => {
+        this.textElement.value += this.isLowerCase ? keyData.label.toLowerCase() : keyData.label;
+        this.textElement.focus();
+      };
+    }
+
+    return () => {
+      this.textElement.focus();
+    };
   }
 
   initializeEventListeners() {
     document.addEventListener('keydown', (event) => {
-      this.textElement.value += event.key;
+      event.preventDefault();
 
-      if (event.shiftKey) {
-        this.isLowerCase = false;
+      document.querySelector(`.key[data-key-code="${event.code}"]`).classList.add('active');
+
+      if (this.keysInfo[event.code].keyCode === 'Tab') {
+        this.textElement.value += '\t';
+      } else if (this.keysInfo[event.code].keyCode === 'Backspace') {
+        this.handleBackspace();
+      } else if (this.keysInfo[event.code].keyCode === 'Delete') {
+        this.handleDelete();
+      } else if (this.keysInfo[event.code].keyCode === 'Enter') {
+        this.textElement.value += '\n';
+      } else if (this.keysInfo[event.code].keyCode === 'Space') {
+        this.textElement.value += ' ';
+      } else if (this.keysInfo[event.code].keyCode === 'CapsLock') {
+        this.isCapsLock = !this.isCapsLock;
+        this.isLowerCase = !this.isCapsLock;
+
         this.renderKeyboard();
-      }
+      } else if (this.keysInfo[event.code].keyCode === 'ArrowUp') {
+        this.textElement.value += '↑';
+      } else if (this.keysInfo[event.code].keyCode === 'ArrowLeft') {
+        this.textElement.value += '←';
+      } else if (this.keysInfo[event.code].keyCode === 'ArrowDown') {
+        this.textElement.value += '↓';
+      } else if (this.keysInfo[event.code].keyCode === 'ArrowRight') {
+        this.textElement.value += '→';
+      } else if (this.keysInfo[event.code].isWritable) {
+        this.textElement.value += event.key;
+      } else if (event.shiftKey && !event.repeat) {
+        this.isShift = true;
+        this.isLowerCase = this.isCapsLock ? !this.isLowerCase : false;
 
-      if (event.shiftKey && event.ctrlKey) {
+        this.renderKeyboard();
+      } else if (event.shiftKey && event.ctrlKey) {
         this.switchLayout();
         this.renderKeyboard();
       }
+
+      this.textElement.focus();
     });
 
-    document.addEventListener('keyup', () => {
+    document.addEventListener('keyup', (event) => {
+      document.querySelector(`.key[data-key-code="${event.code}"]`).classList.remove('active');
+
       this.isLowerCase = this.isCapsLock ? !this.isLowerCase : true;
-      this.renderKeyboard();
+
+      if (this.isShift) {
+        this.isShift = false;
+
+        this.renderKeyboard();
+      }
+
+      this.textElement.focus();
     });
+  }
+
+  handleDelete() {
+    const start = this.textElement.selectionStart;
+    const end = this.textElement.selectionEnd;
+
+    if (start === end) {
+      this.textElement.value = this.textElement.value.substring(0, start) + this.textElement.value.substring(start + 1);
+    } else {
+      this.textElement.value = this.textElement.value.substring(0, start) + this.textElement.value.substring(end);
+    }
+
+    this.textElement.focus();
+    this.textElement.setSelectionRange(start, start);
+  }
+
+  handleBackspace() {
+    const start = this.textElement.selectionStart;
+    const end = this.textElement.selectionEnd;
+
+    if (start === end) {
+      this.textElement.value = this.textElement.value.substring(0, start - 1) + this.textElement.value.substring(end);
+      this.textElement.setSelectionRange(start - 1, start - 1);
+    } else {
+      this.textElement.value = this.textElement.value.substring(0, start) + this.textElement.value.substring(end);
+      this.textElement.setSelectionRange(start, start);
+    }
+
+    this.textElement.focus();
   }
 
   renderTextarea() {
@@ -88,7 +217,8 @@ class Keyboard {
 
       keysRowData.forEach((keyData) => {
         const keyHandler = this.getKeyHandler(keyData);
-        const key = new Key(keysRow, keyData.keyCode, keyData.label, keyData.secondLabel, keyData.isCaseSensitive ? this.isLowerCase : false, keyHandler);
+        const isActive = keyData.keyCode === 'CapsLock' && this.isCapsLock;
+        const key = new Key(keysRow, keyData.keyCode, keyData.label, keyData.secondLabel, keyData.isCaseSensitive ? this.isLowerCase : false, isActive, keyHandler);
 
         key.render();
       });

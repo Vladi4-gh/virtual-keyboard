@@ -35,9 +35,20 @@
           min-width: 5rem;
           margin: 0.5rem;
           position: relative;
+          transition: background-color 0.2s, border-radius 0.2s;
 
           &[data-key-code='Space'] {
             width: 29rem;
+          }
+
+          &.active {
+            background-color: var(--color-light-green);
+            border-radius: 1rem;
+          }
+
+          &:active {
+            background-color: var(--color-light-green);
+            border-radius: 1rem;
           }
 
           .upper-label {
