@@ -5,6 +5,8 @@ import Key from './key';
 class Keyboard {
   constructor(container) {
     this.container = container;
+    this.isLowerCase = true;
+    this.isCapsLock = false;
 
     this.switchLayout(true);
   }
@@ -22,31 +24,37 @@ class Keyboard {
     this.keysLayout = keysLayout[currentLanguage];
   }
 
-  getKeyDataByCode(keyCode) {
-    const label = keyCode;
+  getKeyHandler(keyData) {
     let onClick = () => {};
 
-    if (keyCode === 'ChangeLanguage') {
+    if (keyData.keyCode === 'ChangeLanguage') {
       onClick = () => {
         this.switchLayout();
         this.renderKeyboard();
       };
     }
 
-    return {
-      label,
-      onClick,
-    };
+    return onClick;
   }
 
   initializeEventListeners() {
     document.addEventListener('keydown', (event) => {
       this.textElement.value += event.key;
 
+      if (event.shiftKey) {
+        this.isLowerCase = false;
+        this.renderKeyboard();
+      }
+
       if (event.shiftKey && event.ctrlKey) {
         this.switchLayout();
         this.renderKeyboard();
       }
+    });
+
+    document.addEventListener('keyup', () => {
+      this.isLowerCase = this.isCapsLock ? !this.isLowerCase : true;
+      this.renderKeyboard();
     });
   }
 
@@ -78,9 +86,9 @@ class Keyboard {
 
       keysRow.classList.add('keys-row');
 
-      keysRowData.forEach((keyCode) => {
-        const keyData = this.getKeyDataByCode(keyCode);
-        const key = new Key(keysRow, keyData.label, keyData.onClick);
+      keysRowData.forEach((keyData) => {
+        const keyHandler = this.getKeyHandler(keyData);
+        const key = new Key(keysRow, keyData.keyCode, keyData.label, keyData.secondLabel, keyData.isCaseSensitive ? this.isLowerCase : false, keyHandler);
 
         key.render();
       });

@@ -24,7 +24,7 @@ function renderFooter(container) {
   const footerElement = document.createElement('footer');
 
   footerElement.classList.add('footer');
-  footerElement.innerHTML = '<p class="row">Windows usage only</p><p class="row">Ctrl + Shift to switch language</p>';
+  footerElement.innerHTML = '<p class="row">Windows usage only</p><p class="row">Ctrl + Shift to switch language (EN/RU)</p>';
 
   container.appendChild(footerElement);
 }
