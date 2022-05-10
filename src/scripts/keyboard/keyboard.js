@@ -130,12 +130,16 @@ class Keyboard {
         this.textElement.value += '→';
       } else if (this.keysInfo[event.code].isWritable) {
         this.textElement.value += event.key;
-      } else if (event.shiftKey && !event.repeat) {
+      }
+
+      if (event.shiftKey && !event.repeat) {
         this.isShift = true;
         this.isLowerCase = this.isCapsLock ? !this.isLowerCase : false;
 
         this.renderKeyboard();
-      } else if (event.shiftKey && event.ctrlKey) {
+      }
+
+      if (event.shiftKey && event.ctrlKey) {
         this.switchLayout();
         this.renderKeyboard();
       }
